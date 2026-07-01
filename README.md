@@ -1,34 +1,60 @@
-# SvelteKit Plugin System
+# SvelteKit Plugin Starter
 
-A manifest-driven plugin architecture for SvelteKit. Drop a folder under
-`src/lib/plugins/` with a `plugin.manifest.ts` and it's auto-discovered — the host app never
-imports a plugin by name and needs **zero changes** to add one.
+A starter template for a **manifest-driven plugin architecture** in SvelteKit. Drop a folder
+under `src/lib/plugins/` with a `plugin.manifest.ts` and it's auto-discovered — the host app
+never imports a plugin by name and needs **zero changes** to add one.
 
-This repo is a small, self-contained reference implementation with two working example
-plugins. It's extracted from a production white-label streaming platform and rebuilt with no
-proprietary dependencies so the architecture can be studied and reused.
+Clone it and start building plugins immediately. It ships one skeleton plugin (`hello`),
+generic host wiring for every capability, and two full reference plugins under `examples/`.
+
+> Looking for the annotated demo with the reference plugins live and seeded? That's the
+> `main` branch. This `template` branch is the lean starting point.
+
+## Quick start
+
+```bash
+npx degit SublimeAdel/sveltekit-plugin-starter my-app
+cd my-app
+npm install
+npm run dev
+```
+
+Then create your first plugin:
+
+```bash
+npm run new:plugin my-plugin   # scaffolds src/lib/plugins/my-plugin/
+# restart the dev server so discovery picks it up, then enable it at /admin/plugins
+```
+
+## What's in the box
 
 ```
 src/lib/plugins/
-  _core/            discovery, registry, loader, page metadata, types
+  _core/            discovery, registry, loader, page metadata, types  ← the system
   components/       shared: error boundary, browse-section loader
-  quotes/           example plugin using every capability
-  announcement/     minimal plugin: browse section + settings only
+  hello/            skeleton plugin (browse section + settings) — your starting point
+
+src/lib/server/     swappable backend: in-memory store, demo-cookie auth, plugin config
+src/routes/         generic host routes (browse, admin console, plugin API + page)
+scripts/            new-plugin.js scaffolder
+examples/plugins/   quotes + announcement — full reference plugins (not auto-discovered)
+docs/               authoring guide + a page-request trace
 ```
 
 ## What a plugin can contribute
 
-A plugin declares any subset of these in its manifest. It provides only what it needs.
+A plugin declares any subset of these in its manifest. It provides only what it needs — the
+`hello` skeleton uses just the first two.
 
-| Capability          | Manifest field          | In the `quotes` example                      |
-| ------------------- | ----------------------- | -------------------------------------------- |
-| Data collections    | `collections`           | `quotesAuthors`, `quotesQuotes`              |
-| Browse-page section | `browseSection`         | the "Featured Authors" carousel on `/browse` |
-| Admin settings UI   | `components.settings`   | section title, max authors                   |
-| Admin management UI | `components.management` | CRUD authors and their quotes                |
-| HTTP API            | `routes`                | `/api/plugins/quotes/...`                     |
-| Consumer page       | `pages`                 | `/quotes/<slug>`                             |
-| Settings validation | `settingsSchema`        | a Zod schema                                 |
+| Capability          | Manifest field          |
+| ------------------- | ----------------------- |
+| Browse-page section | `browseSection`         |
+| Admin settings UI   | `components.settings`   |
+| Admin management UI | `components.management` |
+| Data collections    | `collections`           |
+| HTTP API            | `routes`                |
+| Consumer page       | `pages`                 |
+| Settings validation | `settingsSchema`        |
 
 ## How it works
 
@@ -58,30 +84,14 @@ anything the matcher touches.** That's why there are two type files — `types.t
 then cached. Every plugin surface is wrapped in `<PluginErrorBoundary>` so one plugin's
 render error can't crash the host page.
 
-For a line-by-line trace of a page request through every hop, see
-[`docs/plugin-page-flow.md`](docs/plugin-page-flow.md). To build your own plugin, see
-[`docs/authoring-a-plugin.md`](docs/authoring-a-plugin.md).
+See [`docs/authoring-a-plugin.md`](docs/authoring-a-plugin.md) to build a plugin and
+[`docs/plugin-page-flow.md`](docs/plugin-page-flow.md) for a line-by-line request trace.
 
-## Running it
+## The swappable backend
 
-```bash
-npm install
-npm run dev
-```
-
-Then:
-
-1. Open `/login` and continue as the demo admin.
-2. Open `/admin/plugins` and enable both plugins.
-3. In the Quotes plugin's Management tab, add authors and quotes (some are seeded already).
-4. Visit `/browse` to see the plugin sections, and `/quotes/ada-lovelace` for a plugin page.
+To run with no external services, `src/lib/server/` provides an in-memory store
+(`store.ts`, resets on restart) and demo-cookie auth (`auth.ts`). Both are isolated so
+swapping in a real database or auth provider is a localized change — the plugin contract and
+`_core` are untouched. This is the first thing to replace when adapting the template.
 
 `npm run check` type-checks the project (clean: 0 errors, 0 warnings).
-
-## Notes on the demo backend
-
-To stay dependency-free, this reference replaces the original MongoDB layer with a small
-in-memory store (`src/lib/server/store.ts`) that resets on restart, and replaces real auth
-with a demo admin cookie (`src/lib/server/auth.ts`). Both are deliberately isolated so
-swapping in a real database or auth provider is a localized change — the plugin contract and
-`_core` are untouched.

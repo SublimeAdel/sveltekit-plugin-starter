@@ -1,8 +1,13 @@
 # Authoring a plugin
 
 A plugin is a folder under `src/lib/plugins/<id>/` whose only required file is
-`plugin.manifest.ts`. Everything else is opt-in. Study `quotes/` (uses everything) and
-`announcement/` (browse section + settings only) alongside this.
+`plugin.manifest.ts`. Everything else is opt-in.
+
+Fastest start: `npm run new:plugin <id>` scaffolds a browse-section + settings plugin (the
+`hello` skeleton) into `src/lib/plugins/<id>/`. Then grow it using this guide.
+
+For complete patterns, study the reference plugins under `examples/plugins/`: `quotes` uses
+every capability, `announcement` is the minimal browse-section + settings case.
 
 ## Files by capability
 

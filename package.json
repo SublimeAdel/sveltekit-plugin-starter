@@ -1,5 +1,5 @@
 {
-	"name": "sveltekit-plugin-system",
+	"name": "sveltekit-plugin-starter",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
@@ -9,7 +9,8 @@
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"new:plugin": "node scripts/new-plugin.js"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^7.0.1",
